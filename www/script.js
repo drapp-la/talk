@@ -1,9 +1,3 @@
-
-const appURL = () => {
-  const protocol = 'http' + (location.hostname == 'localhost' ? '' : 's') + '://'
-  return protocol + location.hostname + (location.hostname == 'localhost' ? ':3000' : '')
-}
-let SIGNALING_SERVER = appURL()
 let USE_AUDIO = true
 let USE_VIDEO = true
 let CAMERA = 'user'
@@ -422,4 +416,13 @@ const swapCamera = () => {
       console.log(err)
       alert('Error is swaping camera')
     })
+}
+
+SimpleVideoApp.close = () => {
+	try {
+		clearTimeout(tickers.resize)
+	} catch {}
+  try {
+		document.querySelector('.SimpleVideoApp--video-me').srcObject.getTracks().forEach(track => track.stop())
+	} catch {}
 }
