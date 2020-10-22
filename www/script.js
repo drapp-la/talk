@@ -23,14 +23,6 @@ const resize = () => {
   $videos.setAttribute('data-items', items.toString())
 }
 
-tickers.resize = setInterval(() => {
-  try {
-    resize()
-  } catch {
-    clearTimeout(tickers.resize)
-  }
-}, 350)
-
 const notify = (html, id, ms = 5000) => {
   const $container = document.getElementById('SimpleVideoApp')
   try {
@@ -144,7 +136,8 @@ window.SimpleVideoApp = (params = {}) => {
 
   signalingSocket.on('disconnect', () => {
     for (peer_id in peerMediaElements) {
-      peerMediaElements[peer_id].remove()
+      peerMediaElements[peer_id].parentNode.remove()
+      resize()
     }
     for (peer_id in peers) {
       peers[peer_id].close()
@@ -193,6 +186,7 @@ window.SimpleVideoApp = (params = {}) => {
       document.querySelector('.SimpleVideoApp--message').style.display = 'none'
 
       $video.srcObject = event.stream
+      resize()
     }
 
     /* Add our local stream */
@@ -267,6 +261,7 @@ window.SimpleVideoApp = (params = {}) => {
     const { peer_id } = config
     if (peer_id in peerMediaElements) {
       peerMediaElements[peer_id].parentNode.remove()
+      resize()
     }
     if (peer_id in peers) {
       peers[peer_id].close()
@@ -335,6 +330,7 @@ const setup = async () => {
   document.querySelector('.SimpleVideoApp--videos').appendChild($wrapper)
   document.querySelector('.SimpleVideoApp--buttons').style.display = 'flex'
   $video.srcObject = localMediaStream
+  resize()
 }
 
 const toggleScreenSharing = () => {
@@ -419,9 +415,6 @@ const swapCamera = () => {
 
 window.SimpleVideoApp.close = () => {
 	try {
-		clearTimeout(tickers.resize)
-	} catch {}
-  try {
 		document.querySelector('.SimpleVideoApp--video-me').srcObject.getTracks().forEach(track => track.stop())
 	} catch {}
 }
