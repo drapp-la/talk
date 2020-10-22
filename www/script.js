@@ -92,7 +92,6 @@ window.SimpleVideoApp = (params = {}) => {
 
   console.log('Connecting to signaling server')
   signalingSocket = window.io(server)
-  signalingSocket = window.io()
 
   let $container = document.getElementById('SimpleVideoApp') || document.createElement('div')
   if (!$container.id) {
