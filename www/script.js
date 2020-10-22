@@ -67,7 +67,7 @@ const copy = async text => {
   return true
 }
 
-const SimpleVideoApp = (params = {}) => {
+window.SimpleVideoApp = (params = {}) => {
 	if (signalingSocket) return
   const server = params.server || location.origin
   const iceServers = params.iceServers || ICE_SERVERS
@@ -418,7 +418,7 @@ const swapCamera = () => {
     })
 }
 
-SimpleVideoApp.close = () => {
+window.SimpleVideoApp.close = () => {
 	try {
 		clearTimeout(tickers.resize)
 	} catch {}
