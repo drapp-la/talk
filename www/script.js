@@ -9,24 +9,6 @@ let localMediaStream
 let peers = {}
 let peerMediaElements = {}
 const tickers = {}
-const ICE_SERVERS = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun.stunprotocol.org:3478' },
-  { urls: 'stun:stun.sipnet.net:3478' },
-  { urls: 'stun:stun.ideasip.com:3478' },
-  { urls: 'stun:stun.iptel.org:3478' },
-  { urls: 'turn:numb.viagenie.ca', username: 'imvasanthv@gmail.com', credential: 'd0ntuseme' },
-  {
-    urls: [
-      'turn:173.194.72.127:19305?transport=udp',
-      'turn:[2404:6800:4008:C01::7F]:19305?transport=udp',
-      'turn:173.194.72.127:443?transport=tcp',
-      'turn:[2404:6800:4008:C01::7F]:443?transport=tcp'
-    ],
-    username: 'CKjCuLwFEgahxNRjuTAYzc/s6OMT',
-    credential: 'u1SQDR/SQsPQIxXNWQT7czc/G4c='
-  }
-];
 const resize = () => {
   const $videos = document.querySelector('.SimpleVideoApp--videos')
   if (!$videos) return
@@ -74,10 +56,10 @@ const copy = async text => {
   return true
 }
 
-window.SimpleVideoApp = (params = {}) => {
+window.SimpleVideoApp = async (params = {}) => {
 	if (signalingSocket) return
   const server = params.server || location.origin
-  const iceServers = params.iceServers || ICE_SERVERS
+  params.iceServers = params.iceServers || await fetch(`${server}/iceServers`).then(res => res.json())
   let channel = params.channel
   if (!channel && location.origin === server) {
     channel = location.pathname.substring(1)
@@ -167,7 +149,10 @@ window.SimpleVideoApp = (params = {}) => {
     const { peer_id } = config
     if (peer_id in peers) return
     peerConnection = new RTCPeerConnection(
-      { iceServers },
+      {
+        iceServers: params.iceServers,
+        // iceTransportPolicy: 'relay'
+      },
       {
         optional: [
           { DtlsSrtpKeyAgreement: true },
@@ -180,10 +165,11 @@ window.SimpleVideoApp = (params = {}) => {
 
     peerConnection.onicecandidate = event => {
       if (!event.candidate) return
-      const { candidate, sdpMLineIndex } = event.candidate
+      const { candidate, sdpMLineIndex, sdpMid } = event.candidate
+      // if (candidate.indexOf('typ relay') === -1) return console.log('omitting:', candidate);
       signalingSocket.emit('relayICECandidate', {
         peer_id,
-        ice_candidate: { sdpMLineIndex, candidate }
+        ice_candidate: { sdpMLineIndex, candidate, sdpMid }
       })
     }
 

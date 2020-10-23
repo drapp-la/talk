@@ -2,23 +2,43 @@ const express = require('express')
 const path = require('path')
 const http = require('http')
 const socket = require('socket.io')
+const fetch = require('node-fetch')
 
 const app = express()
 const server = http.createServer(app)
 const io = socket.listen(server)
 
 const {
-  PORT = 3000
+  PORT = 3000,
+  XIRSYS_API_KEY,
 } = process.env
 
 app.use(express.static(path.join(__dirname, 'www')))
 
-app.get(['/', '/:room'], (req, res) =>
-  res.sendFile(path.join(__dirname, 'www/index.html'))
-)
-
 server.listen(PORT, '0.0.0.0', () =>
   console.log(`Ready port: ${PORT}`)
+)
+
+app.get('/iceServers', async (req, res) => {
+	const body = JSON.stringify({
+		format: 'urls',
+		expire: 10
+	})
+	const { s, v } = await fetch('https://global.xirsys.net/_turn/meet', {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Length': body.length,
+			'Authorization': `Basic ${Buffer.from(`drapp:${XIRSYS_API_KEY}`).toString('base64')}`,
+		},
+		body
+	}).then(res => res.json()) || {}
+	if (!s || s !== 'ok' || !v || !v.iceServers) return res.json({})
+	res.send([v.iceServers])
+})
+
+app.get(['/', '/:room'], (req, res) =>
+  res.sendFile(path.join(__dirname, 'www/index.html'))
 )
 
 const channels = {};

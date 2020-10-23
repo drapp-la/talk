@@ -1,32 +1,34 @@
 {
 	"name": "talk",
 	"version": "1.0.0",
-	"description": "A free video call app for the web.",
+	"description": "DrApp Meet",
 	"main": "server.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "pm2-dev server.js"
+		"dev": "DOTENV_CONFIG_PATH=./.env.dev pm2-dev 'node -r dotenv/config server.js'"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/vasanthv/talk.git"
+		"url": "git+https://github.com/drapp-la/talk.git"
 	},
 	"keywords": [
 		"webrtc",
 		"socket.io",
 		"video"
 	],
-	"author": "Vasanth V",
-	"license": "ISC",
+	"author": "Ricardo Kleine Samson",
+	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/vasanthv/talk/issues"
+		"url": "https://github.com/drapp-la/talk/issues"
 	},
-	"homepage": "https://github.com/vasanthv/talk#readme",
+	"homepage": "https://github.com/drapp-la/talk#readme",
 	"dependencies": {
 		"express": "^4.17.1",
+		"node-fetch": "^2.6.1",
 		"socket.io": "^2.2.0"
 	},
 	"devDependencies": {
+		"dotenv": "^8.2.0",
 		"pm2": "^4.5.0"
 	}
 }
