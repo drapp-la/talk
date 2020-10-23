@@ -431,6 +431,6 @@ window.SimpleVideoApp.close = () => {
     document.getElementById('SimpleVideoApp').innerHTML = ''
     Object.keys(tickers).forEach(t => clearTimeout(t))
 	} catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
