@@ -57,8 +57,7 @@ const copy = async text => {
 }
 
 window.SimpleVideoApp = async (params = {}) => {
-	if (signalingSocket) return
-  const server = params.server || location.origin
+	const server = params.server || location.origin
   params.iceServers = params.iceServers || await fetch(`${server}/iceServers`).then(res => res.json())
   let channel = params.channel
   if (!channel && location.origin === server) {
@@ -76,12 +75,11 @@ window.SimpleVideoApp = async (params = {}) => {
     script.src = `${server}/socket.io/socket.io.js`
     script.onload = () => SimpleVideoApp(params)
     head.appendChild(script)
-    return false
+    return
   }
 
   console.log('Connecting to signaling server', server)
-  signalingSocket = window.io(server)
-
+  signalingSocket = signalingSocket || window.io(server)
 
   let $container = document.getElementById('SimpleVideoApp') || document.createElement('div')
   if (!$container.id) {
@@ -416,5 +414,23 @@ const swapCamera = () => {
 window.SimpleVideoApp.close = () => {
 	try {
 		document.querySelector('.SimpleVideoApp--video-me').srcObject.getTracks().forEach(track => track.stop())
-	} catch {}
+    Object.keys(peerMediaElements).forEach(peer_id => {
+      peerMediaElements[peer_id].parentNode.remove()
+    })
+    Object.keys(peers).forEach(peer_id => {
+      peers[peer_id].close()
+    })
+    resize()
+    peerConnection = null
+    signalingSocket.close()
+    signalingSocket.disconnect(true)
+    signalingSocket = null
+    localMediaStream = null
+    peers = {}
+    peerMediaElements = {}
+    document.getElementById('SimpleVideoApp').innerHTML = ''
+    Object.keys(tickers).forEach(t => clearTimeout(t))
+	} catch (e) {
+    console.log(e)
+  }
 }
