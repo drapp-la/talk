@@ -1,5 +1,6 @@
 # git folder
 .git
+.env*
 
 # NPM
 node_modules
