@@ -17,7 +17,7 @@ const {
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'www')))
 
-server.listen(PORT, '0.0.0.0', () =>
+server.listen(PORT, () =>
   console.log(`Ready port: ${PORT}`)
 )
 
