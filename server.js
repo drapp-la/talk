@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const http = require('http')
 const socket = require('socket.io')
+const cors = require('cors')
 const fetch = require('node-fetch')
 
 const app = express()
@@ -13,6 +14,7 @@ const {
   XIRSYS_API_KEY,
 } = process.env
 
+app.use(cors())
 app.use(express.static(path.join(__dirname, 'www')))
 
 server.listen(PORT, '0.0.0.0', () =>
