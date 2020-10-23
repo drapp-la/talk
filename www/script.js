@@ -206,8 +206,7 @@ window.SimpleVideoApp = async (params = {}) => {
               })
             },
             err => {
-              console.log(err)
-              alert('Offer setLocalDescription failed!')
+              console.error('Offer setLocalDescription failed!', err)
             }
           )
         },
@@ -238,19 +237,18 @@ window.SimpleVideoApp = async (params = {}) => {
                   })
                 },
                 err => {
-                  console.log(err)
-                  alert('Answer setLocalDescription failed!')
+                  console.error('Answer setLocalDescription failed!', err)
                 }
               )
             },
             error => {
-              console.log('Error creating answer: ', error)
+              console.error('Error creating answer: ', error)
             }
           )
         }
       },
       error => {
-        console.log('setRemoteDescription error: ', error)
+        console.error('setRemoteDescription error: ', error)
       }
     )
   })
@@ -278,7 +276,9 @@ const setup = async () => {
   if (localMediaStream) return
 
   localMediaStream = await navigator.mediaDevices.getUserMedia({ audio: USE_AUDIO, video: USE_VIDEO }).catch(() => {
-    alert('This app will not work without camera/microphone access.')
+    notify(`<div class="SimpleVideoApp--notify SimpleVideoApp--enable-media">
+      <div>Necesita habilitar la camara y el microfono para hacer la videoconsulta</div>
+    </div>`, '.SimpleVideoApp--enable-media')
   })
 
   if (!localMediaStream) return
@@ -381,8 +381,7 @@ const toggleScreenSharing = () => {
       }
     })
     .catch(e => {
-      alert('Unable to share screen.')
-      console.error(e)
+      console.error('Unable to share screen.', e)
     })
 }
 
@@ -409,10 +408,9 @@ const swapCamera = () => {
       document.querySelector('.SimpleVideoApp--video-me').srcObject = newStream
       document.querySelector('.SimpleVideoApp--video-me').classList.toggle('SimpleVideoApp--video-mirror')
     })
-    .catch(err => {
-      console.log(err)
-      alert('Error is swaping camera')
-    })
+    .catch(err =>
+      console.error('Error is swaping camera', err)
+    )
 }
 
 window.SimpleVideoApp.close = () => {
