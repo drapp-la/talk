@@ -22,21 +22,38 @@ server.listen(PORT, () =>
 )
 
 app.get('/iceServers', async (req, res) => {
-	const body = JSON.stringify({
-		format: 'urls',
-		expire: 10
-	})
-	const { s, v } = await fetch('https://global.xirsys.net/_turn/meet', {
-		method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json',
-			'Content-Length': body.length,
-			'Authorization': `Basic ${Buffer.from(`drapp:${XIRSYS_API_KEY}`).toString('base64')}`,
-		},
-		body
-	}).then(res => res.json()) || {}
-	if (!s || s !== 'ok' || !v || !v.iceServers) return res.json({})
-	res.send([v.iceServers])
+	/*
+		const body = JSON.stringify({
+			format: 'urls',
+			expire: 10
+		})
+		const { s, v } = await fetch('https://global.xirsys.net/_turn/meet', {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				'Content-Length': body.length,
+				'Authorization': `Basic ${Buffer.from(`drapp:${XIRSYS_API_KEY}`).toString('base64')}`,
+			},
+			body
+		}).then(res => res.json()) || {}
+		if (!s || s !== 'ok' || !v || !v.iceServers) return res.json({})
+		res.send([v.iceServers])
+	*/
+	res.send([
+	  { urls: [ "stun:sp-turn1.xirsys.com" ] },
+	  {
+	     username: "kg_6QZIwAbd4M1wSm3cmWkajkf5O9khy1WkeigO0F-hU1VDReaCTXMD3o2CEIkQEAAAAAF-SQThkcmFwcA==",
+	     credential: "48814f3a-14d8-11eb-bb10-0242ac140004",
+	     urls: [
+	         "turn:sp-turn1.xirsys.com:80?transport=udp",
+	         "turn:sp-turn1.xirsys.com:3478?transport=udp",
+	         "turn:sp-turn1.xirsys.com:80?transport=tcp",
+	         "turn:sp-turn1.xirsys.com:3478?transport=tcp",
+	         "turns:sp-turn1.xirsys.com:443?transport=tcp",
+	         "turns:sp-turn1.xirsys.com:5349?transport=tcp"
+	     ]
+	  }
+	])
 })
 
 app.get(['/', '/:room'], (req, res) =>
