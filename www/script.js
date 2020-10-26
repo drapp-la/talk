@@ -149,7 +149,7 @@ window.SimpleVideoApp = async (params = {}) => {
     peerConnection = new RTCPeerConnection(
       {
         iceServers: params.iceServers,
-        // iceTransportPolicy: 'relay'
+        iceTransportPolicy: 'relay'
       },
       {
         optional: [
@@ -164,7 +164,7 @@ window.SimpleVideoApp = async (params = {}) => {
     peerConnection.onicecandidate = event => {
       if (!event.candidate) return
       const { candidate, sdpMLineIndex, sdpMid } = event.candidate
-      // if (candidate.indexOf('typ relay') === -1) return console.log('omitting:', candidate);
+      if (candidate.indexOf('typ relay') === -1) return console.log('omitting:', candidate);
       signalingSocket.emit('relayICECandidate', {
         peer_id,
         ice_candidate: { sdpMLineIndex, candidate, sdpMid }
