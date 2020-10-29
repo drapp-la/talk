@@ -22,7 +22,7 @@ server.listen(PORT, () =>
 )
 
 app.get('/iceServers', async (req, res) => {
-
+/*
 	const body = JSON.stringify({
 		format: 'urls',
 		expire: 10
@@ -38,7 +38,7 @@ app.get('/iceServers', async (req, res) => {
 	}).then(res => res.json()) || {}
 	if (!s || s !== 'ok' || !v || !v.iceServers) return res.json({})
 	res.send([v.iceServers])
-/*
+*/
 	res.send([
 	  { urls: [ "stun:sp-turn1.xirsys.com" ] },
 	  {
@@ -54,7 +54,7 @@ app.get('/iceServers', async (req, res) => {
 	     ]
 	  }
 	])
-	*/
+
 })
 
 app.get(['/', '/:room'], (req, res) =>
