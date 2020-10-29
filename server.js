@@ -22,23 +22,23 @@ server.listen(PORT, () =>
 )
 
 app.get('/iceServers', async (req, res) => {
-	/*
-		const body = JSON.stringify({
-			format: 'urls',
-			expire: 10
-		})
-		const { s, v } = await fetch('https://global.xirsys.net/_turn/meet', {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-				'Content-Length': body.length,
-				'Authorization': `Basic ${Buffer.from(`drapp:${XIRSYS_API_KEY}`).toString('base64')}`,
-			},
-			body
-		}).then(res => res.json()) || {}
-		if (!s || s !== 'ok' || !v || !v.iceServers) return res.json({})
-		res.send([v.iceServers])
-	*/
+
+	const body = JSON.stringify({
+		format: 'urls',
+		expire: 10
+	})
+	const { s, v } = await fetch('https://global.xirsys.net/_turn/meet', {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Length': body.length,
+			'Authorization': `Basic ${Buffer.from(`drapp:${XIRSYS_API_KEY}`).toString('base64')}`,
+		},
+		body
+	}).then(res => res.json()) || {}
+	if (!s || s !== 'ok' || !v || !v.iceServers) return res.json({})
+	res.send([v.iceServers])
+/*
 	res.send([
 	  { urls: [ "stun:sp-turn1.xirsys.com" ] },
 	  {
@@ -54,6 +54,7 @@ app.get('/iceServers', async (req, res) => {
 	     ]
 	  }
 	])
+	*/
 })
 
 app.get(['/', '/:room'], (req, res) =>
