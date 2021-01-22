@@ -57,7 +57,7 @@ app.get('/iceServers', async (req, res) => {
 
 })
 
-app.get(['/', '/:room'], (req, res) =>
+app.get(['/', '/:room', '*'], (req, res) =>
   res.sendFile(path.join(__dirname, 'www/index.html'))
 )
 
