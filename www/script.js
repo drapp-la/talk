@@ -270,15 +270,23 @@ window.SimpleVideoApp = async (params = {}) => {
   })
 }
 
+
+const setlocalMediaStreamValue = async videoValue => await navigator.mediaDevices.getUserMedia({ audio: USE_AUDIO, video: videoValue }).catch(() => {
+  notify(`<div class="SimpleVideoApp--notify SimpleVideoApp--enable-media">
+    <div>Necesita habilitar la camara y el microfono para hacer la videoconsulta</div>
+  </div>`, '.SimpleVideoApp--enable-media')
+})
+
+
+
+
 const setup = async () => {
   if (localMediaStream) return
 
-  localMediaStream = await navigator.mediaDevices.getUserMedia({ audio: USE_AUDIO, video: USE_VIDEO }).catch(() => {
-    notify(`<div class="SimpleVideoApp--notify SimpleVideoApp--enable-media">
-      <div>Necesita habilitar la camara y el microfono para hacer la videoconsulta</div>
-    </div>`, '.SimpleVideoApp--enable-media')
-  })
+  localMediaStream = await setlocalMediaStreamValue(USE_VIDEO)
 
+  if(!localMediaStream) localMediaStream = await setlocalMediaStreamValue(false)
+ 
   if (!localMediaStream) return
 
   document.querySelector('.SimpleVideoApp--message').style.display = 'none'
