@@ -22,38 +22,58 @@ server.listen(PORT, () =>
 )
 
 app.get('/iceServers', async (req, res) => {
-/*
-	const body = JSON.stringify({
-		format: 'urls',
-		expire: 10
-	})
-	const { s, v } = await fetch('https://global.xirsys.net/_turn/meet', {
+	let channel = 'meet'
+	const date = new Date().toISOString().substr(0, 10)
+	try {
+		const url = new URL(req.get('referer'))
+		channel = url.pathname.substr(1)
+		const [database, apptID] = Buffer.from(decodeURIComponent(channel), 'base64').toString().split(':')
+		if (/^userdb-/.test(database)) {
+			channel = database
+		}
+	} catch {}
+
+	const ns = await fetch(`https://drapp:${XIRSYS_API_KEY}@global.xirsys.net/_ns/${channel}`, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',
-			'Content-Length': body.length,
-			'Authorization': `Basic ${Buffer.from(`drapp:${XIRSYS_API_KEY}`).toString('base64')}`,
 		},
-		body
+	}).then(res => res.json()).catch(() => null)
+
+	if (!ns || !ns.v  || (ns.v !== 'path_exists' && !ns.v._ver_)) {
+		channel = 'meet'
+	}
+
+	const { s, v } = await fetch(`https://drapp:${XIRSYS_API_KEY}@global.xirsys.net/_turn/${channel}`, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			format: 'urls',
+			expire: 600
+		})
 	}).then(res => res.json()) || {}
-	if (!s || s !== 'ok' || !v || !v.iceServers) return res.json({})
+
+	if (!s || s !== 'ok' || !v || !v.iceServers) return res.json([])
 	res.send([v.iceServers])
-*/
-	res.send([
-	  { urls: [ "stun:sp-turn1.xirsys.com" ] },
-	  {
-	     username: "kg_6QZIwAbd4M1wSm3cmWkajkf5O9khy1WkeigO0F-hU1VDReaCTXMD3o2CEIkQEAAAAAF-SQThkcmFwcA==",
-	     credential: "48814f3a-14d8-11eb-bb10-0242ac140004",
-	     urls: [
-	         "turn:sp-turn1.xirsys.com:80?transport=udp",
-	         "turn:sp-turn1.xirsys.com:3478?transport=udp",
-	         "turn:sp-turn1.xirsys.com:80?transport=tcp",
-	         "turn:sp-turn1.xirsys.com:3478?transport=tcp",
-	         "turns:sp-turn1.xirsys.com:443?transport=tcp",
-	         "turns:sp-turn1.xirsys.com:5349?transport=tcp"
-	     ]
-	  }
-	])
+	// res.json([])
+
+	// res.send([
+	//   { urls: [ "stun:sp-turn1.xirsys.com" ] },
+	//   {
+	//      username: "kg_6QZIwAbd4M1wSm3cmWkajkf5O9khy1WkeigO0F-hU1VDReaCTXMD3o2CEIkQEAAAAAF-SQThkcmFwcA==",
+	//      credential: "48814f3a-14d8-11eb-bb10-0242ac140004",
+	//      urls: [
+	//          "turn:sp-turn1.xirsys.com:80?transport=udp",
+	//          "turn:sp-turn1.xirsys.com:3478?transport=udp",
+	//          "turn:sp-turn1.xirsys.com:80?transport=tcp",
+	//          "turn:sp-turn1.xirsys.com:3478?transport=tcp",
+	//          "turns:sp-turn1.xirsys.com:443?transport=tcp",
+	//          "turns:sp-turn1.xirsys.com:5349?transport=tcp"
+	//      ]
+	//   }
+	// ])
 
 })
 
@@ -70,17 +90,14 @@ io.sockets.on('connection', socket => {
 	socket.channels = {};
 	sockets[socket.id] = socket;
 
-	console.log('[' + socket.id + '] connection accepted');
 	socket.on('disconnect', () => {
 		for (const channel in socket.channels) {
 			part(channel);
 		}
-		console.log('[' + socket.id + '] disconnected');
 		delete sockets[socket.id];
 	});
 
 	socket.on('join', config => {
-		console.log('[' + socket.id + '] join ', config);
 		const channel = socketHostName + config.channel;
 
 		// Already Joined
@@ -115,7 +132,6 @@ io.sockets.on('connection', socket => {
 	socket.on('relayICECandidate', config => {
 		let peer_id = config.peer_id;
 		let ice_candidate = config.ice_candidate;
-		console.log('[' + socket.id + '] relay ICE-candidate to [' + peer_id + '] ', ice_candidate);
 
 		if (peer_id in sockets) {
 			sockets[peer_id].emit('iceCandidate', { peer_id: socket.id, ice_candidate: ice_candidate });
@@ -125,11 +141,6 @@ io.sockets.on('connection', socket => {
 	socket.on('relaySessionDescription', config => {
 		let peer_id = config.peer_id;
 		let session_description = config.session_description;
-		console.log(
-			'[' + socket.id + '] relay SessionDescription to [' + peer_id + '] ',
-			session_description
-		);
-
 		if (peer_id in sockets) {
 			sockets[peer_id].emit('sessionDescription', {
 				peer_id: socket.id,

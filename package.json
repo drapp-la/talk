@@ -5,7 +5,7 @@
 	"main": "server.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "DOTENV_CONFIG_PATH=./.env.dev pm2-dev 'node -r dotenv/config server.js'"
+		"dev": "pm2-dev server.js"
 	},
 	"repository": {
 		"type": "git",
