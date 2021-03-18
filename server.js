@@ -22,6 +22,20 @@ server.listen(PORT, () =>
 )
 
 app.get('/iceServers', async (req, res) => {
+	res.send([
+	  { urls: [ "stun:stun.drapp.la:5349" ] },
+	  {
+	     username: "pepu",
+	     credential: "12345",
+	     urls: [
+	         "turn:turn.drapp.la:3478?transport=udp",
+	         "turn:turn.drapp.la:3478?transport=tcp",
+	         "turns:turn.drapp.la:5349?transport=udp",
+	         "turns:turn.drapp.la:5349?transport=tcp"
+	     ]
+	  }
+	])
+	/*
 	let channel = 'meet'
 	const date = new Date().toISOString().substr(0, 10)
 	try {
@@ -57,23 +71,23 @@ app.get('/iceServers', async (req, res) => {
 
 	if (!s || s !== 'ok' || !v || !v.iceServers) return res.json([])
 	res.send([v.iceServers])
-	// res.json([])
 
-	// res.send([
-	//   { urls: [ "stun:sp-turn1.xirsys.com" ] },
-	//   {
-	//      username: "kg_6QZIwAbd4M1wSm3cmWkajkf5O9khy1WkeigO0F-hU1VDReaCTXMD3o2CEIkQEAAAAAF-SQThkcmFwcA==",
-	//      credential: "48814f3a-14d8-11eb-bb10-0242ac140004",
-	//      urls: [
-	//          "turn:sp-turn1.xirsys.com:80?transport=udp",
-	//          "turn:sp-turn1.xirsys.com:3478?transport=udp",
-	//          "turn:sp-turn1.xirsys.com:80?transport=tcp",
-	//          "turn:sp-turn1.xirsys.com:3478?transport=tcp",
-	//          "turns:sp-turn1.xirsys.com:443?transport=tcp",
-	//          "turns:sp-turn1.xirsys.com:5349?transport=tcp"
-	//      ]
-	//   }
-	// ])
+	res.send([
+	  { urls: [ "stun:sp-turn1.xirsys.com" ] },
+	  {
+	     username: "kg_6QZIwAbd4M1wSm3cmWkajkf5O9khy1WkeigO0F-hU1VDReaCTXMD3o2CEIkQEAAAAAF-SQThkcmFwcA==",
+	     credential: "48814f3a-14d8-11eb-bb10-0242ac140004",
+	     urls: [
+	         "turn:sp-turn1.xirsys.com:80?transport=udp",
+	         "turn:sp-turn1.xirsys.com:3478?transport=udp",
+	         "turn:sp-turn1.xirsys.com:80?transport=tcp",
+	         "turn:sp-turn1.xirsys.com:3478?transport=tcp",
+	         "turns:sp-turn1.xirsys.com:443?transport=tcp",
+	         "turns:sp-turn1.xirsys.com:5349?transport=tcp"
+	     ]
+	  }
+	])
+	*/
 
 })
 
